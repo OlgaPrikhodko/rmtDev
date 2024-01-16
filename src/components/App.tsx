@@ -1,31 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Background from "./Background";
 import Container from "./Container";
 import Footer from "./Footer";
 import Header from "./Header";
-
-const BASE_URL = "https://bytegrad.com/course-assets/projects/rmtdev/api/data";
+import { useJobItems } from "../lib/hooks";
 
 function App() {
   const [searchText, setSearchText] = useState("");
+  const { jobItems, isLoading } = useJobItems(searchText);
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [jobItems, setJobItems] = useState([]);
-
-  useEffect(() => {
-    if (!searchText) return;
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      const response = await fetch(`${BASE_URL}?search=${searchText}`);
-      const data = await response.json();
-      setIsLoading(false);
-      setJobItems(data.jobItems);
-    };
-
-    fetchData();
-  }, [searchText]);
   return (
     <>
       <Background />
