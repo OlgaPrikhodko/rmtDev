@@ -3,7 +3,7 @@ import Background from "./Background";
 import Container from "./Container";
 import Footer from "./Footer";
 import Header, { HeaderTop } from "./Header";
-import { useJobItems } from "../lib/hooks";
+import { useActiveId, useJobItems } from "../lib/hooks";
 import JobItemContent from "./JobItemContent";
 import Sidebar, { SidebarTop } from "./Sidebar";
 import JobList from "./JobList";
@@ -17,6 +17,7 @@ import SearchForm from "./SearchForm";
 function App() {
   const [searchText, setSearchText] = useState("");
   const { jobItems, isLoading } = useJobItems(searchText);
+  const activeId = useActiveId();
 
   return (
     <>
