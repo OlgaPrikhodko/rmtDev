@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { TJobItem } from "./types";
-
-const BASE_URL = "https://bytegrad.com/course-assets/projects/rmtdev/api/data";
+import { TJobItem, TJobItemDetails } from "./types";
+import { BASE_URL } from "./constants";
 
 export function useJobItems(searchText: string) {
   const [jobItems, setJobItems] = useState<TJobItem[]>([]);
@@ -24,6 +23,27 @@ export function useJobItems(searchText: string) {
   }, [searchText]);
 
   return { isLoading, jobItems: jobItemsSliced };
+}
+
+export function useJobItem(id: number | null) {
+  const [jobItem, setJobItem] = useState<TJobItemDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      const response = await fetch(`${BASE_URL}/${id}`);
+      const data = await response.json();
+      setIsLoading(false);
+      setJobItem(data.jobItem);
+    };
+
+    fetchData();
+  }, [id]);
+
+  return { jobItem, isLoading };
 }
 
 export function useActiveId() {
