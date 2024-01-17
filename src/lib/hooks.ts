@@ -22,7 +22,11 @@ export function useJobItems(searchText: string) {
     fetchData();
   }, [searchText]);
 
-  return { isLoading, jobItems: jobItemsSliced };
+  return {
+    isLoading,
+    jobItems: jobItemsSliced,
+    totalNumberOfResults: jobItems.length,
+  };
 }
 
 export function useJobItem(id: number | null) {
