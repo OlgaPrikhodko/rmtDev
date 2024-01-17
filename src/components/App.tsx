@@ -16,8 +16,7 @@ import SearchForm from "./SearchForm";
 
 function App() {
   const [searchText, setSearchText] = useState("");
-  const debouncedSearchText = useDebounce(searchText, 250);
-
+  const debouncedSearchText = useDebounce(searchText, 500);
   const { jobItems, isLoading, totalNumberOfResults } =
     useJobItems(debouncedSearchText);
 
