@@ -40,7 +40,6 @@ function SortingButton({ onClick, sortBy, isActive }: SortingButtonProps) {
       }`}
     >
       {sortBy}
-      {isActive}
     </button>
   );
 }
