@@ -15,20 +15,38 @@ import Logo from "./Logo";
 import SearchForm from "./SearchForm";
 import { Toaster } from "react-hot-toast";
 import { COUNT_ON_PAGE } from "../lib/constants";
+import { TSortBy } from "../lib/types";
 
 function App() {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const debouncedSearchText = useDebounce(searchText, 500);
   const { jobItems, isLoading } = useJobItems(debouncedSearchText);
+  const [sortBy, setSortBy] = useState<TSortBy>("relevant");
 
   const totalNumberOfResults = jobItems?.length || 0;
   const totalNumberOfPages = totalNumberOfResults / COUNT_ON_PAGE;
-  const jobItemSliced =
-    jobItems?.slice(
-      (currentPage - 1) * COUNT_ON_PAGE,
-      currentPage * COUNT_ON_PAGE
-    ) || [];
+
+  const jobItemsSorted =
+    jobItems?.sort((a, b) => {
+      if (sortBy === "relevant") {
+        return b.relevanceScore - a.relevanceScore;
+      }
+      if (sortBy === "recent") {
+        return a.daysAgo - b.daysAgo;
+      }
+      return -1;
+    }) || [];
+
+  const jobItemSortedAndSliced = jobItemsSorted?.slice(
+    (currentPage - 1) * COUNT_ON_PAGE,
+    currentPage * COUNT_ON_PAGE
+  );
+
+  const handleChangeSortBy = (newSortBy: TSortBy) => {
+    setSortBy(newSortBy);
+    setCurrentPage(1);
+  };
 
   const handleChangePage = (direction: "next" | "previous") => {
     if (direction === "next") {
@@ -54,10 +72,10 @@ function App() {
         <Sidebar>
           <SidebarTop>
             <ResultsCount totalNumberOfResults={totalNumberOfResults} />
-            <SortingControls />
+            <SortingControls onClick={handleChangeSortBy} sortBy={sortBy} />
           </SidebarTop>
 
-          <JobList jobItems={jobItemSliced} isLoading={isLoading} />
+          <JobList jobItems={jobItemSortedAndSliced} isLoading={isLoading} />
 
           <PaginationControls
             currentPage={currentPage}
