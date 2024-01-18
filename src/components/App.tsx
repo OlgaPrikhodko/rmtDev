@@ -14,6 +14,7 @@ import BookmarksButton from "./BookmarksButton";
 import Logo from "./Logo";
 import SearchForm from "./SearchForm";
 import { Toaster } from "react-hot-toast";
+import { COUNT_ON_PAGE } from "../lib/constants";
 
 function App() {
   const [searchText, setSearchText] = useState("");
@@ -22,7 +23,12 @@ function App() {
   const { jobItems, isLoading } = useJobItems(debouncedSearchText);
 
   const totalNumberOfResults = jobItems?.length || 0;
-  const jobItemSliced = jobItems?.slice(0, 7) || [];
+  const totalNumberOfPages = totalNumberOfResults / COUNT_ON_PAGE;
+  const jobItemSliced =
+    jobItems?.slice(
+      (currentPage - 1) * COUNT_ON_PAGE,
+      currentPage * COUNT_ON_PAGE
+    ) || [];
 
   const handleChangePage = (direction: "next" | "previous") => {
     if (direction === "next") {
@@ -54,9 +60,9 @@ function App() {
           <JobList jobItems={jobItemSliced} isLoading={isLoading} />
 
           <PaginationControls
-            previousPage={currentPage - 1}
-            nextPage={currentPage + 1}
+            currentPage={currentPage}
             onChangePage={handleChangePage}
+            totalNumberOfPages={totalNumberOfPages}
           />
         </Sidebar>
 
