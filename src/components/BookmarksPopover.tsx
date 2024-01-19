@@ -1,3 +1,12 @@
+import { useBookmarkContext } from "../hooks/useBookmarkContext";
+import JobList from "./JobList";
+
 export default function BookmarksPopover() {
-  return <div className="bookmarks-popover"></div>;
+  const { bookmarkedJobItems } = useBookmarkContext();
+
+  return (
+    <div className="bookmarks-popover">
+      <JobList jobItems={bookmarkedJobItems} isLoading={false} />
+    </div>
+  );
 }
