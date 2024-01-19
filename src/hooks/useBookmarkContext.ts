@@ -4,7 +4,7 @@ import { BookmarksContext } from "../contexts/BookmarksContextProvider";
 export function useBookmarkContext() {
   const context = useContext(BookmarksContext);
 
-  if (context == undefined) {
+  if (!context) {
     throw new Error(
       `BookmarksContext was used outside of the BookmarksContextProvider`
     );
