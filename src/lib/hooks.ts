@@ -19,26 +19,6 @@ export function useJobItem(id: number | null) {
   return { jobItem: data?.jobItem, isLoading: isInitialLoading } as const;
 }
 
-export function useActiveId() {
-  const [activeId, setActiveId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      const id = +window.location.hash.slice(1);
-      setActiveId(id);
-    };
-    window.addEventListener("hashchange", handleHashChange);
-
-    handleHashChange();
-
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, []);
-
-  return activeId;
-}
-
 export function useDebounce<T>(value: T, timedelay = 500): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
