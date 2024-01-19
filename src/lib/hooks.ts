@@ -1,24 +1,7 @@
 import { useEffect, useState } from "react";
-import { TJobItemDetails } from "./types";
-import { BASE_URL } from "./constants";
 import { useQuery } from "@tanstack/react-query";
 import { handleError } from "./utils";
-
-type JobItemApiResponse = {
-  public: boolean;
-  jobItem: TJobItemDetails;
-};
-
-const fetchJobItem = async (id: number): Promise<JobItemApiResponse> => {
-  const response = await fetch(`${BASE_URL}/${id}`);
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.description);
-  }
-  const data = await response.json();
-
-  return data;
-};
+import { fetchJobItem } from "../services/apiJobItem";
 
 export function useJobItem(id: number | null) {
   const { data, isInitialLoading } = useQuery(
@@ -32,6 +15,7 @@ export function useJobItem(id: number | null) {
       onError: handleError,
     }
   );
+
   return { jobItem: data?.jobItem, isLoading: isInitialLoading } as const;
 }
 
