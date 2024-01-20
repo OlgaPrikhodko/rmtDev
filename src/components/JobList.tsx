@@ -1,18 +1,22 @@
 import { useActiveIdContext } from "../hooks/useActiveIdContext";
-import { useJobItemsContext } from "../hooks/useJobItemsContext";
+import { TJobItem } from "../lib/types";
 import JobListItem from "./JobListItem";
 import Spinner from "./Spinner";
 
-export function JobList() {
+type JobListProps = {
+  jobItems: TJobItem[];
+  isLoading: boolean;
+};
+
+// reusable component - can't use
+export function JobList({ jobItems, isLoading }: JobListProps) {
   const { activeId } = useActiveIdContext();
-  const { jobItemsSortedAndSliced: jobItems, isLoading } = useJobItemsContext();
 
   return (
     <ul className="job-list">
       {isLoading && <Spinner />}
 
       {!isLoading &&
-        jobItems &&
         jobItems.map((jobItem) => (
           <JobListItem
             jobItem={jobItem}
