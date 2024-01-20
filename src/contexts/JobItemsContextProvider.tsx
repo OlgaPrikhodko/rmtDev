@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useMemo, useState } from "react";
 import { TJobItem, TPaginationDirection, TSortBy } from "../lib/types";
 import { useSearchQuery } from "../hooks/useSearchQuery";
 import { COUNT_ON_PAGE } from "../lib/constants";
@@ -33,19 +33,27 @@ export default function JobItemsContextProvider({
   const totalNumberOfResults = jobItems?.length || 0;
   const totalNumberOfPages = totalNumberOfResults / COUNT_ON_PAGE;
 
-  const jobItemsSorted = [...(jobItems || [])]?.sort((a, b) => {
-    if (sortBy === "relevant") {
-      return b.relevanceScore - a.relevanceScore;
-    }
-    if (sortBy === "recent") {
-      return a.daysAgo - b.daysAgo;
-    }
-    return -1;
-  });
+  const jobItemsSorted = useMemo(
+    () =>
+      [...(jobItems || [])]?.sort((a, b) => {
+        if (sortBy === "relevant") {
+          return b.relevanceScore - a.relevanceScore;
+        }
+        if (sortBy === "recent") {
+          return a.daysAgo - b.daysAgo;
+        }
+        return -1;
+      }),
+    [sortBy, jobItems]
+  );
 
-  const jobItemsSortedAndSliced = jobItemsSorted?.slice(
-    (currentPage - 1) * COUNT_ON_PAGE,
-    currentPage * COUNT_ON_PAGE
+  const jobItemsSortedAndSliced = useMemo(
+    () =>
+      jobItemsSorted?.slice(
+        (currentPage - 1) * COUNT_ON_PAGE,
+        currentPage * COUNT_ON_PAGE
+      ),
+    [currentPage, jobItemsSorted]
   );
 
   const handleChangeSortBy = (newSortBy: TSortBy) => {
