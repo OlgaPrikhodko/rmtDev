@@ -1,0 +1,81 @@
+import { ReactNode, createContext, useState } from "react";
+import { TJobItem, TPaginationDirection, TSortBy } from "../lib/types";
+import { useSearchQuery } from "../hooks/useSearchQuery";
+import { COUNT_ON_PAGE } from "../lib/constants";
+import { useSearchTextContext } from "../hooks/useSearchTextContex";
+
+type JobItemsContextType = {
+  jobItems: TJobItem[] | undefined;
+  jobItemsSortedAndSliced: TJobItem[] | undefined;
+  isLoading: boolean;
+  totalNumberOfPages: number;
+  totalNumberOfResults: number;
+  currentPage: number;
+  sortBy: TSortBy;
+  handleChangePage: (direction: TPaginationDirection) => void;
+  handleChangeSortBy: (newSortBy: TSortBy) => void;
+};
+
+export const JobItemsContext = createContext<JobItemsContextType | null>(null);
+
+export default function JobItemsContextProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { debouncedSearchText } = useSearchTextContext();
+
+  const { jobItems, isLoading } = useSearchQuery(debouncedSearchText);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [sortBy, setSortBy] = useState<TSortBy>("relevant");
+
+  const totalNumberOfResults = jobItems?.length || 0;
+  const totalNumberOfPages = totalNumberOfResults / COUNT_ON_PAGE;
+
+  const jobItemsSorted = [...(jobItems || [])]?.sort((a, b) => {
+    if (sortBy === "relevant") {
+      return b.relevanceScore - a.relevanceScore;
+    }
+    if (sortBy === "recent") {
+      return a.daysAgo - b.daysAgo;
+    }
+    return -1;
+  });
+
+  const jobItemsSortedAndSliced = jobItemsSorted?.slice(
+    (currentPage - 1) * COUNT_ON_PAGE,
+    currentPage * COUNT_ON_PAGE
+  );
+
+  const handleChangeSortBy = (newSortBy: TSortBy) => {
+    setSortBy(newSortBy);
+    setCurrentPage(1);
+  };
+
+  const handleChangePage = (direction: TPaginationDirection) => {
+    if (direction === "next") {
+      setCurrentPage((prev) => prev + 1);
+    } else if (direction === "previous") {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  return (
+    <JobItemsContext.Provider
+      value={{
+        jobItems,
+        jobItemsSortedAndSliced,
+        isLoading,
+        totalNumberOfPages,
+        totalNumberOfResults,
+        currentPage,
+        sortBy,
+        handleChangePage,
+        handleChangeSortBy,
+      }}
+    >
+      {children}
+    </JobItemsContext.Provider>
+  );
+}
